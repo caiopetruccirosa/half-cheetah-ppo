@@ -5,6 +5,7 @@ import torch.nn.functional as F
 import numpy as np
 import random
 import argparse
+import os
 
 import math
 
@@ -34,6 +35,8 @@ from utils import (
 # -------------------------------
 
 def record_episode(env_name: str, agent: CheetahAgent, video_folder: str, video_name_prefix: str):
+    os.makedirs(video_folder, exist_ok=True)
+    
     env = make_env(env_name, render_mode='rgb_array')
     env = RecordVideo(env, video_folder=video_folder, name_prefix=video_name_prefix, episode_trigger=lambda _: True)
     
@@ -324,6 +327,9 @@ def main():
     arg_parser.add_argument('--device', '-d', help='PyTorch device to use for tensor operations during training.', type=str)
     args = arg_parser.parse_args()
 
+    experiment_folder = f'experiments/experiment_{args.experiment_id}'
+    os.makedirs(experiment_folder, exist_ok=True)
+
     device = get_device(args.device)
     agent = CheetahAgent(
         state_dim=config.STATE_DIM,
@@ -359,9 +365,9 @@ def main():
         max_gradient_norm=config.MAX_GRADIENT_NORM,
         value_loss_coefficient=config.VALUE_LOSS_COEFFICIENT,
         n_checkpoints=config.N_CHECKPOINTS,
-        checkpoint_folder=f'experiment_{args.experiment_id}/{config.CHECKPOINT_FOLDER}',
+        checkpoint_folder=f'{experiment_folder}/{config.CHECKPOINT_FOLDER}',
         history_attributes=history_attributes,
-        history_folder=f'experiment_{args.experiment_id}/{config.HISTORY_FOLDER}',
+        history_folder=f'{experiment_folder}/{config.HISTORY_FOLDER}',
         check_tensor_shapes=config.CHECK_TENSOR_SHAPES,
         verbose=config.VERBOSE,
     )
@@ -373,13 +379,13 @@ def main():
             xlabel=delta_name,
             ylabel=val_name,
             fig_name=attr_key,
-            fig_path=f'experiment_{args.experiment_id}/{config.FIG_PATH}',
+            fig_path=f'{experiment_folder}/{config.FIG_PATH}',
         )
 
     record_episode(
         env_name=config.ENV_NAME, 
         agent=agent,
-        video_folder=f'experiment_{args.experiment_id}/{config.VIDEO_FOLDER}',
+        video_folder=f'{experiment_folder}/{config.VIDEO_FOLDER}',
         video_name_prefix=config.VIDEO_NAME_PREFIX,
     )
     

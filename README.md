@@ -1,5 +1,3 @@
-# Walking Cheetah learning with PPO
+# Half Cheetah with Proximal Policy Optimization (PPO)
 
-Used a micromamba environment for versioning:
-
-- Python version: `3.12`.
+Python version used: `3.12`.
